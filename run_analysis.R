@@ -1,11 +1,7 @@
-################################################################################
-#   Setup and Download File                                                    #
-################################################################################
-#check for the directory, if it does not exist, create it
-if (!file.exists("./data")){dir.create("./data")}
-#download the file into the new Programming Assignment Directory
-fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-download.file(fileUrl, destfile = "./data/Wearable_Electronics.zip")
+## Author: Kelly Pisane
+## Project: Coursera, Getting and Cleaning Data, Week 4 Programming Assignment
+## Last Modified: 1 May 2017
+
 library(dplyr)
 ################################################################################                                                  
 #   Step 1: Read in the Raw Data & Merge the Test and Training Sets            #
@@ -76,7 +72,7 @@ colnames(CompleteDataset) <- names[keepers]
 
 # In this step, I create a tidy data frame.  First, I setup an empty dataframe
 # that I can add my results into
-tidyData <- tbl_df(data.frame())
+tidyData <- data.frame()
 # In the following set of nested loops, the following happens:
 # 1. A subject ID (1 through 30) is selected
 # 2. An activity is selected (nested loop)
@@ -91,10 +87,13 @@ for (i in 1:30){
     for (j in 1:6){
         activities <- c("walking", "walkingupstairs", "walkingdownstairs", 
                         "sitting", "standing", "laying")
-        x <- arrangedDataset %>% filter(subject==i, activity==activities[j]) %>%
+        x <- CompleteDataset %>% filter(subject==i, activity==activities[j]) %>%
         select(-(subject:activity)) 
         y <- as.data.frame(t(as.matrix(apply(x, 2, mean))))
         z <- cbind("subject"=as.numeric(i), "activity" = activities[j], y)
         tidyData <<- rbind(tidyData, z) 
     }
 }
+
+#get rid of the stuff I don't need anymore to keep my environment manageable
+rm (x, y, z, activities, features, keepers, names, i, j)
